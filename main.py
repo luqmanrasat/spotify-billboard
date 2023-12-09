@@ -31,22 +31,23 @@ def getUserAuthorization():
     )
 
 
-def fetchSongList(date):
+def fetchTracks(date):
     url = f"https://www.billboard.com/charts/hot-100/{date}"
     soup = BeautifulSoup(requests.get(url).text, "html.parser")
 
-    song_names_raw = soup.select(".o-chart-results-list__item .a-font-primary-bold-s")
-    song_names = [
-        song.text.replace("\n", "").replace("\t", "") for song in song_names_raw
-    ]
+    track_names = soup.select(".o-chart-results-list__item .a-font-primary-bold-s")
+    artists = soup.select(".o-chart-results-list__item .a-font-primary-s")
 
-    singer_names_raw = soup.select(".o-chart-results-list__item .a-font-primary-s")
-    singer_names = [
-        singer.text.replace("\n", "").replace("\t", "") for singer in singer_names_raw
-    ]
+    tracks = []
+    for i in range(len(track_names)):
+        track = {
+            "name": track_names[i].text.replace("\n", "").replace("\t", ""),
+            "artist": artists[i].text.replace("\n", "").replace("\t", ""),
+        }
+        tracks.append(track)
 
     print(f"Done scraping chart on {date}")
-    return dict(zip(song_names, singer_names))
+    return tracks
 
 
 def encodeStringToBase64(text):
@@ -106,11 +107,11 @@ def addTracksToPlaylist(playlist_id, track_uris):
     pass
 
 
-def fetchTrackUri(track, artist):
+def fetchTrackUri(name, artist):
     url = "https://api.spotify.com/v1/search"
     headers = {"Authorization": f"Bearer {token}"}
     params = {
-        "q": f"track:{track} artist:{artist}",
+        "q": f"track:{name} artist:{artist}",
         "type": "track",
         "limit": 1,
     }
@@ -119,10 +120,10 @@ def fetchTrackUri(track, artist):
     parsed_result = result.json()
     tracks = parsed_result["tracks"]["items"]
     if not tracks:
-        print(f"NOT FOUND: {track} by {artist}")
+        print(f"NOT FOUND: {name} by {artist}")
         return None
 
-    print(f"FOUND: {track} by {artist}")
+    print(f"FOUND: {name} by {artist}")
     return tracks[0]["uri"]
 
 
@@ -131,7 +132,7 @@ def fetchTrackUri(track, artist):
 chart_date = input(
     "Which date of the chart you want? Type the date in this format YYYY-MM-DD: "
 )
-tracks = fetchSongList(chart_date)
+tracks = fetchTracks(chart_date)
 
 token = requestAccessToken()
 
@@ -139,8 +140,8 @@ playlist_name = input("Enter playlist name: ")
 playlist_id = createPlaylist(playlist_name)
 
 track_uris = []
-for track, artist in tracks.items():
-    track_uri = fetchTrackUri(track, artist)
+for track in tracks:
+    track_uri = fetchTrackUri(track["name"], track["artist"])
     if track_uri is None:
         continue
     track_uris.append(track_uri)
