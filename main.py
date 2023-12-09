@@ -102,7 +102,7 @@ def addTracksToPlaylist(playlist_id, track_uris):
     payload = {"uris": track_uris}
 
     requests.post(url, json=payload, headers=headers)
-    print(f"{track_uris.len} tracks added to playlist")
+    print(f"{len(track_uris)} tracks added to playlist")
     pass
 
 
