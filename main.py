@@ -31,7 +31,7 @@ def getUserAuthorization():
     )
 
 
-def fetchTracks(date):
+def scrapeChartForTracks(date):
     url = f"https://www.billboard.com/charts/hot-100/{date}"
     soup = BeautifulSoup(requests.get(url).text, "html.parser")
 
@@ -132,7 +132,7 @@ def fetchTrackUri(name, artist):
 chart_date = input(
     "Which date of the chart you want? Type the date in this format YYYY-MM-DD: "
 )
-tracks = fetchTracks(chart_date)
+tracks = scrapeChartForTracks(chart_date)
 
 token = requestAccessToken()
 
