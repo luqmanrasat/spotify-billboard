@@ -136,14 +136,14 @@ tracks = fetchTracks(chart_date)
 
 token = requestAccessToken()
 
-playlist_name = input("Enter playlist name: ")
-playlist_id = createPlaylist(playlist_name)
-
 track_uris = []
 for track in tracks:
     track_uri = fetchTrackUri(track["name"], track["artist"])
     if track_uri is None:
         continue
     track_uris.append(track_uri)
+
+playlist_name = input("Enter playlist name: ")
+playlist_id = createPlaylist(playlist_name)
 
 addTracksToPlaylist(playlist_id, track_uris)
