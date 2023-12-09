@@ -139,13 +139,10 @@ playlist_name = input("Enter playlist name: ")
 playlist_id = createPlaylist(playlist_name)
 
 track_uris = []
-found_counter = 0
 for track, artist in tracks.items():
     track_uri = fetchTrackUri(track, artist)
     if track_uri is None:
         continue
-
     track_uris.append(track_uri)
-    found_counter = found_counter + 1
 
 addTracksToPlaylist(playlist_id, track_uris)
