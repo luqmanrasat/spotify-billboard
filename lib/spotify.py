@@ -2,7 +2,7 @@ import os
 import base64
 import requests
 import webbrowser
-import urllib.parse
+import urllib.parse as url
 
 from dotenv import load_dotenv
 
@@ -20,12 +20,12 @@ class Spotify:
     client_id = os.getenv("CLIENT_ID")
     client_secret = os.getenv("CLIENT_SECRET")
     redirect_uri = os.getenv("REDIRECT_URI")
-    auth_code = os.getenv("CODE")
+    auth_code = ""
     token = ""
 
     def __init__(self):
         # TODO: listen to callback and get auth code
-        # self.getUserAuthorization()
+        self.getUserAuthorization()
         self.requestAccessToken()
 
     def getUserAuthorization(self):
@@ -36,8 +36,11 @@ class Spotify:
             "redirect_uri": self.redirect_uri,
         }
         webbrowser.open(
-            f"https://accounts.spotify.com/authorize?{urllib.parse.urlencode(params)}"
+            f"https://accounts.spotify.com/authorize?{url.urlencode(params)}"
         )
+        parsed_url = url.urlparse(input("enter redirected url after login: "))
+        code = url.parse_qs(parsed_url.query)["code"]
+        self.auth_code = code
 
     def requestAccessToken(self):
         auth_string = f"{self.client_id}:{self.client_secret}"
@@ -104,7 +107,3 @@ class Spotify:
         requests.post(url, json=payload, headers=headers)
         print(f"{len(track_uris)} tracks added to playlist")
         pass
-
-
-# s = Spotify()
-# s.getUserAuthorization()
