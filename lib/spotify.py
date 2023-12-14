@@ -1,18 +1,12 @@
 import os
-import base64
 import requests
 import webbrowser
 import urllib.parse as url
 
 from dotenv import load_dotenv
+from lib.utils import encodeStringToBase64
 
 load_dotenv()
-
-
-def encodeStringToBase64(text):
-    text_bytes = text.encode("ascii")
-    base64_bytes = base64.b64encode(text_bytes)
-    return base64_bytes.decode("ascii")
 
 
 class Spotify:
